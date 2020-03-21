@@ -46,9 +46,8 @@ class Arr {
 		$this->length += $size;
 	}
 
-	public function merge() {
-		$args = func_get_args();
-		$nums = func_num_args();
+	public function merge(...$args) {
+		$nums = count($args);
 		if ($nums > 0) {
 			foreach ($args as $arg) {
 				if (gettype($arg) == 'array' && !empty($arg)) {
@@ -60,22 +59,22 @@ class Arr {
 		$this->length = count($this->arr);
 	}
 
-	public function keys($search = null): array{
+	public function keys($search = null): array {
 		if ($search != null) {
 			return array_keys($this->arr, $search, true);
 		}
 		return array_keys($this->arr);
 	}
 
-	public function values(): array{
+	public function values(): array {
 		return array_values($this->arr);
 	}
 
-	public function map(callable $call): array{
+	public function map(callable $call): array {
 		return array_map($call, $this->arr);
 	}
 
-	public function get(): array{
+	public function get(): array {
 		return $this->arr;
 	}
 
@@ -83,7 +82,7 @@ class Arr {
 		return json_encode($this->arr);
 	}
 
-	public function __toString(): string{
+	public function __toString(): string {
 		$out = '';
 		foreach ($this->arr as $val) {
 			$out .= $val . ',';

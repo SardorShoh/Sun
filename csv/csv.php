@@ -9,6 +9,10 @@ class csv {
     $file = file_get_contents(realpath($file));
     return $file;
   }
+
+  protected function parseCSV() {
+    
+  }
     
   public finally function toArray() {
     return [];
