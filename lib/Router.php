@@ -1,5 +1,5 @@
 <?php
-//namespace app\router;
+namespace lib;
 
 /**
  * Router class for read GET, POST, PUT, DELETE, HEAD, PATCH and other requests

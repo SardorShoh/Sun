@@ -1,8 +1,15 @@
 <?php
 
+namespace lib;
+
+use lib\JSON;
+
 class Arr {
 
+	//array 
 	protected $arr;
+
+	//length of array
 	public $length;
 
 	public function __construct() {
@@ -20,6 +27,7 @@ class Arr {
 		}
 	}
 
+	//push method for array
 	public function push(...$p) {
 		$size = count($p);
 		foreach ($p as $l) {
@@ -28,16 +36,19 @@ class Arr {
 		$this->length += $size;
 	}
 
+	// pop method of array
 	public function pop() {
 		array_pop($this->arr);
 		$this->length -= 1;
 	}
 
+	//shift method of array
 	public function shift() {
 		array_shift($this->arr);
 		$this->length -= 1;
 	}
 
+	//unshift method of array
 	public function unshift(...$a) {
 		$size = count($a);
 		for ($i = ($size - 1); $i >= 0; $i--) {
@@ -46,6 +57,7 @@ class Arr {
 		$this->length += $size;
 	}
 
+	//merge any arrays to an array
 	public function merge(...$args) {
 		$nums = count($args);
 		if ($nums > 0) {
@@ -59,29 +71,53 @@ class Arr {
 		$this->length = count($this->arr);
 	}
 
-	public function keys($search = null): array {
+	//get keys of array
+	public function keys($search = null) {
 		if ($search != null) {
-			return array_keys($this->arr, $search, true);
+			$this -> arr = array_keys($this->arr, $search, true);
 		}
-		return array_keys($this->arr);
+		$this -> arr = array_keys($this->arr);
 	}
 
-	public function values(): array {
-		return array_values($this->arr);
+	//get values of array
+	public function values() {
+		$this -> arr = array_values($this->arr);
 	}
 
-	public function map(callable $call): array {
-		return array_map($call, $this->arr);
+	//map method for array
+	public function map(callable $call): self {
+		$this -> arr = array_map($call, $this->arr);
 	}
 
+	//filter method for array
+	public function filter(callable $func) {
+		if ($func) {
+			$this -> arr = array_filter($this->arr, $func);
+		}
+		$this -> arr = array_filter($this->arr);
+	}
+
+	//inArray method for array
+	public function inArray($needle): bool {
+		return in_array($needle, $this->arr);
+	}
+
+	//this method for getting ready array
 	public function get(): array {
 		return $this->arr;
 	}
 
+	//this method for array to JSON converting
 	public function toJSON(): string {
-		return json_encode($this->arr);
+		return (new JSON($this->arr))->encode();
 	}
 
+	//this method for array to object converting
+	public function toObject(): object {
+		return (object) $this->arr;
+	}
+
+	// this method for array to string converting
 	public function __toString(): string {
 		$out = '';
 		foreach ($this->arr as $val) {
@@ -90,11 +126,13 @@ class Arr {
 		return rtrim($out, ',');
 	}
 
+	//this method is remove array elements by keys
 	public function removeByKey($key) {
 		unset($this->arr[$key]);
 		$this->length = count($this->arr);
 	}
 
+	//this method is remove array elements by values
 	public function removeByValue($val = '') {
 		foreach ($this->arr as $i => $v) {
 			if ($val === $v) {
@@ -113,7 +151,3 @@ class Arr {
 		$this->length = null;
 	}
 }
-
-$a = new Arr(['ha' => 'hey', 'gdg' => true, 'ss' => 'new']);
-$a->removeByValue(true);
-echo $a->length;

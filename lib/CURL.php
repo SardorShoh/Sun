@@ -1,6 +1,7 @@
 <?php 
+namespace lib;
 
-class curl {
+class CURL {
 	
 	protected $curl;
   public $urls;
