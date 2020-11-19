@@ -1,6 +1,7 @@
 <?php
 namespace lib;
 
+use \lib\Request;
 /**
  * Router class for read GET, POST, PUT, DELETE, HEAD, PATCH and other requests
  */
@@ -22,6 +23,7 @@ class Router {
 		'GROUP',
 	];
 	private static $instance;
+	private Request $request;
 
 	public static function create() {
 		if (!self::$instance instanceof self) {
@@ -32,6 +34,7 @@ class Router {
 	}
 
 	private function __construct() {
+		$this->request = new Request;
 		$this->path = rtrim($_SERVER['REQUEST_URI'], '/') === '' ? '/' : rtrim($_SERVER['REQUEST_URI'], '/');
 		$this->method = $_SERVER['REQUEST_METHOD'];
 	}
@@ -60,7 +63,7 @@ class Router {
 		];
 	}
 
-	protected function realPathToArray():  ? array{
+	protected function realPathToArray():  ?array {
 		$path = array_filter(explode('/', $this->path));
 		if (empty($path)) {
 			return null;
@@ -68,7 +71,7 @@ class Router {
 		return $path;
 	}
 
-	protected function getArgs(string $path) :  ? array{
+	protected function getArgs(string $path) :  ?array {
 		$params = $this->realPathToArray();
 		$pathcount = count(array_filter(explode('/', $path)));
 		if (count($params) !== $pathcount) {
@@ -147,6 +150,18 @@ class Router {
 		//Header::setcode(404);
 		echo 'Bunday sahifa mavjud emas';
 		return;
+	}
+
+	public function resolve () {
+		$path = $this->request->getPath();
+		$method = $this->request->getMethod();
+		if (in_array($method, $this->allowed)) {
+			$callback = $this->routes[$method][$path] ?? false;
+			if (!$callback) {
+				echo 'Not Found';
+				return;
+			}
+		}
 	}
 
 }
