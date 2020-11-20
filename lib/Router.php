@@ -46,6 +46,68 @@ class Router {
 		return true;
 	}
 
+	public function get(string $path) {
+		if ($this->isNested($path)) {
+			$this->routes['get'][] = ['is_nested' => true, 'path' => $path];
+		} else {
+			$this->routes['get'][] = ['is_nested' => false, 'path' => $path];
+		}
+	}
+
+	public function post(string $path) {
+		if ($this->isNested($path)) {
+			$this->routes['post'][] = ['is_nested' => true, 'path' => $path];
+		} else {
+			$this->routes['post'][] = ['is_nested' => false, 'path' => $path];
+		}
+	}
+
+	public function put(string $path) {
+		if ($this->isNested($path)) {
+			$this->routes['put'][] = ['is_nested' => true, 'path' => $path];
+		} else {
+			$this->routes['put'][] = ['is_nested' => false, 'path' => $path];
+		}
+	}
+
+	public function delete(string $path) {
+		if ($this->isNested($path)) {
+			$this->routes['delete'][] = ['is_nested' => true, 'path' => $path];
+		} else {
+			$this->routes['delete'][] = ['is_nested' => false, 'path' => $path];
+		}
+	}
+
+	public function patch(string $path) {
+		if ($this->isNested($path)) {
+			$this->routes['patch'][] = ['is_nested' => true, 'path' => $path];
+		} else {
+			$this->routes['patch'][] = ['is_nested' => false, 'path' => $path];
+		}
+	}
+
+	public function options(string $path) {
+		if ($this->isNested($path)) {
+			$this->routes['options'][] = ['is_nested' => true, 'path' => $path];
+		} else {
+			$this->routes['options'][] = ['is_nested' => false, 'path' => $path];
+		}
+	}
+
+	public function group(string $path) {
+		if ($this->isNested($path)) {
+			$this->routes['group'][] = ['is_nested' => true, 'path' => $path];
+		} else {
+			$this->routes['group'][] = ['is_nested' => false, 'path' => $path];
+		}
+	}
+
+	public function getRoutes() : ?array {
+		return $this->routes;
+	}
+
+
+	
 	protected function staticAndDynamic(string $path): array{
 		$params = array_filter(explode('/', $path));
 		$static = [];

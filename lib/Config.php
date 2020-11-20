@@ -19,7 +19,7 @@ class Config {
   public int $writeTimeout; //yuboriladigan ma'lumotlarni yozishga qo'yilgan timeout. sekundda
   public int $readBufferSize = 4096; //Har bir connectionda kelgan ma'lumotlarni buferga olish hajmi
   public int $writeBufferSize = 4096; //Har bir connection bilan yuboriladigan ma'lumotlarning buferga yozish hajmi
-  public string $proxyHeader = 'X-Forwarded-Ip'; //foydalanuvchining ip manzilini olish uchun qaysi headerdan foydalanish
+  public string $proxyHeader = 'X-Forwarded-For'; //foydalanuvchining ip manzilini olish uchun qaysi headerdan foydalanish
   public bool $getOnly = false; //Faqat get so'rovlarini amalga oshirish uchun. Bu serverni anti-DOS himoyasi uchun. GET dan boshqa so'rovlar avtomatik tarzda bekor qilinadi
   public ErrorHandler $errorHandler; //Error yuz berganda qanaqa javob qayatrish.
   public bool $disableKeepAlive = false; //Keep-Alive connectionni o'chirib qo'yish
