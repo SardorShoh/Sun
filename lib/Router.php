@@ -33,7 +33,7 @@ class Router {
 		return self::$instance;
 	}
 
-	private function __construct() {
+	public function __construct() {
 		$this->request = new Request;
 		$this->path = rtrim($_SERVER['REQUEST_URI'], '/') === '' ? '/' : rtrim($_SERVER['REQUEST_URI'], '/');
 		$this->method = $_SERVER['REQUEST_METHOD'];
@@ -46,51 +46,51 @@ class Router {
 		return true;
 	}
 
-	public function get(string $path) {
+	public function get(string $path, callable $callback) {
 		if ($this->isNested($path)) {
-			$this->routes['get'][] = ['is_nested' => true, 'path' => $path];
+			$this->routes['get'][] = ['is_nested' => true, 'path' => $path, 'callable' => $callback];
 		} else {
-			$this->routes['get'][] = ['is_nested' => false, 'path' => $path];
+			$this->routes['get'][] = ['is_nested' => false, 'path' => $path, 'callable' => $callback];
 		}
 	}
 
-	public function post(string $path) {
+	public function post(string $path, callable $callback) {
 		if ($this->isNested($path)) {
-			$this->routes['post'][] = ['is_nested' => true, 'path' => $path];
+			$this->routes['post'][] = ['is_nested' => true, 'path' => $path, 'callable' => $callback];
 		} else {
-			$this->routes['post'][] = ['is_nested' => false, 'path' => $path];
+			$this->routes['post'][] = ['is_nested' => false, 'path' => $path, 'callable' => $callback];
 		}
 	}
 
-	public function put(string $path) {
+	public function put(string $path, callable $callback) {
 		if ($this->isNested($path)) {
-			$this->routes['put'][] = ['is_nested' => true, 'path' => $path];
+			$this->routes['put'][] = ['is_nested' => true, 'path' => $path, 'callable' => $callback];
 		} else {
-			$this->routes['put'][] = ['is_nested' => false, 'path' => $path];
+			$this->routes['put'][] = ['is_nested' => false, 'path' => $path, 'callable' => $callback];
 		}
 	}
 
-	public function delete(string $path) {
+	public function delete(string $path, callable $callback) {
 		if ($this->isNested($path)) {
-			$this->routes['delete'][] = ['is_nested' => true, 'path' => $path];
+			$this->routes['delete'][] = ['is_nested' => true, 'path' => $path, 'callable' => $callback];
 		} else {
-			$this->routes['delete'][] = ['is_nested' => false, 'path' => $path];
+			$this->routes['delete'][] = ['is_nested' => false, 'path' => $path, 'callable' => $callback];
 		}
 	}
 
-	public function patch(string $path) {
+	public function patch(string $path, callable $callback) {
 		if ($this->isNested($path)) {
-			$this->routes['patch'][] = ['is_nested' => true, 'path' => $path];
+			$this->routes['patch'][] = ['is_nested' => true, 'path' => $path, 'callable' => $callback];
 		} else {
-			$this->routes['patch'][] = ['is_nested' => false, 'path' => $path];
+			$this->routes['patch'][] = ['is_nested' => false, 'path' => $path, 'callable' => $callback];
 		}
 	}
 
-	public function options(string $path) {
+	public function options(string $path, callable $callback) {
 		if ($this->isNested($path)) {
-			$this->routes['options'][] = ['is_nested' => true, 'path' => $path];
+			$this->routes['options'][] = ['is_nested' => true, 'path' => $path, 'callable' => $callback];
 		} else {
-			$this->routes['options'][] = ['is_nested' => false, 'path' => $path];
+			$this->routes['options'][] = ['is_nested' => false, 'path' => $path, 'callable' => $callback];
 		}
 	}
 
@@ -106,8 +106,10 @@ class Router {
 		return $this->routes;
 	}
 
-
 	
+
+
+
 	protected function staticAndDynamic(string $path): array{
 		$params = array_filter(explode('/', $path));
 		$static = [];
@@ -215,8 +217,8 @@ class Router {
 	}
 
 	public function resolve () {
-		$path = $this->request->getPath();
-		$method = $this->request->getMethod();
+		$path = $this->request->path();
+		$method = $this->request->method();
 		if (in_array($method, $this->allowed)) {
 			$callback = $this->routes[$method][$path] ?? false;
 			if (!$callback) {

@@ -30,4 +30,10 @@ class Headers {
     header("{$key}: {$value}", true);
   }
 
+  public static function get(string $key): ?string {
+    if (!array_key_exists($key, self::getRequestHeaders()))
+      return null;
+    return self::getRequestHeaders()[$key];
+  }
+
 }

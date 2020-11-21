@@ -4,7 +4,7 @@ namespace lib;
 
 class Request {
   
-  public function getPath () {
+  public function path () {
     $path = $_SERVER['REQUEST_URI'] ?? '/';
     $position = strpos($path, '?');
     if ($position === false) 
@@ -12,17 +12,16 @@ class Request {
     return substr($path, 0, $position);
   }
 
-  public function getMethod () {
+  public function method () : ?string {
     return strtolower($_SERVER['REQUEST_METHOD']);
   }
 
-  public function params(array $routes, string $key) : ?string {
+  public function params (array $routes, string $key) : ?string {
     if (!empty($routes)) {
-      $routes = $routes[$this->getMethod()];
+      $routes = $routes[$this->method()];
       $routes = array_filter($routes, function($k, $v) {
         return $k == 'is_nested' && $v == true;
       }, ARRAY_FILTER_USE_BOTH);
-
     }
     return null;
   }
@@ -57,39 +56,17 @@ class Request {
     return null;
   }
 
-  public function cookies() : ?array {
-    $cookies = $_COOKIE;
-    if (!empty($cookies))
-      return $cookies;
-    return null;
-  }
-
-  public function cookie(string $key) : ?string {
-    $cookies = $this->cookies();
-    if (!is_null($cookies))
-      return $cookies[$key];
-    return null;
-  }
-
-  public function headers() : ?array {
-    $headers = headers_list();
-    if (!empty($headers))
-      return $headers;
-    return null;
-  }
-
-  public function header(string $key) : ?string {
-    $headers = $this->headers();
-    if (!is_null($headers))
-      return $header[$key];
-    return null;
-  }
-
   public function ip() : ?string {
     return $_SERVER['REMOTE_ADDR'];
   }
 
   public function body() : ?string {
+    if ($this->is('multipart/form-data')) {
+      if (!empty($_POST)) {
+        return $_POST;
+      }
+      return null;
+    }
     $body = file_get_contents('php://input');
     if (!empty($body))
       return $body;
@@ -97,7 +74,13 @@ class Request {
   }
 
   public function is(string $type) : bool {
-    
-    return false;
+    $content = Headers::getRequestHeaders()['Content-Type'];
+    if (is_null($this->body()))
+      return false;
+    if (strpos(strtolower($content), (ltrim(strtolower($type), '.'))) === false)
+      return false;
+    return true;
   }
+
+
 }
