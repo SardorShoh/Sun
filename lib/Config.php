@@ -6,13 +6,13 @@ use \lib\{Views, ErrorHandler};
 
 class Config {
 
-  public bool $caseSensitive = false;
-  public string $serverHeader;
-  public bool $strictRouting = false;
+  public bool $caseSensitive = false; //Router nomining harflarini katta yoki kichik ekanligini farqlash
+  public string $serverHeader; //Headerda server nomini yuborish
+  public bool $strictRouting = false; // /login va /login/ route lar boshqa-boshqa hisoblanadi
   public bool $immutable = false;
   public bool $unescapePath = false;
-  public bool $etag = false;
-  public int $bodyLimit = 4 * 1024 * 1024;
+  public bool $etag = false; //Headerda ETAG ni yuborish
+  public int $bodyLimit = 4 * 1024 * 1024; //Ma'lumotlarni yuborish hajmi
   public int $concurrency = 256 * 1024; //Bir vaqtning o'zida nechtagacha concurrent ulanish bo'lishi. keyinchalik ishlanadi
   public Views $views; //templating uchun view lar bilan ishlash classi. keyinchalik ishlanadi
   public int $readTimeout; //kelgan ma'lumotni o'qishga qo'yilgan timeout. sekundda

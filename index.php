@@ -11,10 +11,17 @@ require_once("autoload.php");
 // print_r($req->getCookie('hellol'));
 use \lib\{App, Config};
 $conf = new Config();
+$conf->caseSensitive = true;
+$conf->strictRouting = false;
+$conf->serverHeader = 'App server';
 $app = new App($conf);
 
-$app->get('/login', function () {
-  echo 'App running';
+$app->get('/login/:hdhdh', function ($ctx) {
+  $ctx->send($ctx->params('hdhdh'));
+});
+
+$app->post('/login', function ($ctx) {
+  $ctx->json(['hello' => 'world']);
 });
 
 $app->run();

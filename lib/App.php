@@ -42,9 +42,49 @@ class App {
   }
 
   public function run () {
+    Headers::remove('X-Powered-By');
+    if (!empty($this->config->serverHeader)) {
+      Headers::set('Server', $this->config->serverHeader);
+    }
+    $path = $this->ctx->path();
     $method = $this->ctx->method();
     $routes = $this->router->getRoutes()[$method];
-    echo '<pre>';
-    print_r($routes);
+    foreach ($routes as $route) {
+      if ($route['is_nested']) {
+        $this->ctx->route = $route;
+        return $route['callable']($this->ctx);
+      } else {
+        if ($this->config->caseSensitive) {
+          if ($this->config->strictRouting) {
+            if ($path === $route['path']) {
+              return $route['callable']($this->ctx);
+            }
+            $this->ctx->status(404);
+            echo 'Not Found';
+            return;
+          }
+          if (trim($path, '/') === trim($route['path'], '/')) {
+            return $route['callable']($this->ctx);
+          }
+          $this->ctx->status(404);
+          echo 'Not Found';
+          return;
+        }
+        if ($this->config->strictRouting) {
+          if (strtolower($path) === strtolower($route['path'])) {
+            return $route['callable']($this->ctx);
+          }
+          $this->ctx->status(404);
+          echo 'Not Found';
+          return;
+        }
+        if (strtolower(trim($path, '/')) === strtolower(trim($route['path'], '/'))) {
+          return $route['callable']($this->ctx);
+        }
+        $this->ctx->status(404);
+        echo 'Not Found';
+        return;
+      }
+    }
   }
 }

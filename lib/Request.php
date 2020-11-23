@@ -4,7 +4,7 @@ namespace lib;
 
 class Request {
   
-  public function path () {
+  public function path () : string {
     $path = $_SERVER['REQUEST_URI'] ?? '/';
     $position = strpos($path, '?');
     if ($position === false) 
@@ -16,12 +16,19 @@ class Request {
     return strtolower($_SERVER['REQUEST_METHOD']);
   }
 
-  public function params (array $routes, string $key) : ?string {
-    if (!empty($routes)) {
-      $routes = $routes[$this->method()];
-      $routes = array_filter($routes, function($k, $v) {
-        return $k == 'is_nested' && $v == true;
-      }, ARRAY_FILTER_USE_BOTH);
+  public function params (array $route, string $key) : ?string {
+    if (!empty($route)) {
+      $r = explode('/', trim($route['path'], '/'));
+      foreach ($r as $i => $param) {
+        if (strpos($param, ':') !== false) {
+          $name = ltrim($param, ':');
+          if ($name === $key) {
+            $path = $this->path();
+            $path = explode('/', trim($path, '/'));
+            return $path[$i];
+          }
+        }
+      }
     }
     return null;
   }
@@ -81,6 +88,5 @@ class Request {
       return false;
     return true;
   }
-
-
+  
 }

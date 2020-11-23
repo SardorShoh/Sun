@@ -7,6 +7,7 @@ class Context {
 
   protected Request $request;
   protected Response $response;
+  public array $route;
 
   public function __construct () {
     $this->request = new Request;
@@ -17,8 +18,14 @@ class Context {
     return $this->request->method();
   }
 
-  public function params (array $routes, string $key) : ?string {
-    return $this->request->params($routes, $key);
+  public function path () : string {
+    return $this->request->path();
+  }
+
+  public function params (string $key) : ?string {
+    if (!empty($this->route))
+      return $this->request->params($this->route, $key);
+    return null;
   }
 
   public function query (string $key) : ?string {
@@ -53,7 +60,7 @@ class Context {
     $this->response->json($data);
   }
 
-  public function sendString ($data) : void {
+  public function send ($data) : void {
     $this->response->sendString($data);
   }
 
@@ -75,5 +82,9 @@ class Context {
 
   public function hostname(): string {
     return $_SERVER['HTTP_HOST'];
+  }
+
+  public function status (int $code) : void {
+    http_response_code($code);
   }
 }
