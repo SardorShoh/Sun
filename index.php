@@ -12,11 +12,11 @@ require_once("autoload.php");
 use \lib\{App, Config};
 $conf = new Config();
 $conf->caseSensitive = true;
-$conf->strictRouting = false;
+$conf->strictRouting = true;
 $conf->serverHeader = 'App server';
 $app = new App($conf);
 
-$app->get('/login/:hdhdh', function ($ctx) {
+$app->get('/login/:hdhdh/', function ($ctx) {
   $ctx->send($ctx->params('hdhdh'));
 });
 

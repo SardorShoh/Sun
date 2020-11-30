@@ -48,10 +48,106 @@ class App {
     }
     $path = $this->ctx->path();
     $method = $this->ctx->method();
+    if ($this->config->getOnly === true) {
+      if ($method !== 'get') {
+        $this->ctx->status(404);
+        echo 'Not Found. Non GET method';
+        return;
+      }
+    }
     $routes = $this->router->getRoutes()[$method];
     foreach ($routes as $route) {
       if ($route['is_nested']) {
         $this->ctx->route = $route;
+        if ($this->config->caseSensitive) {
+          if ($this->config->strictRouting) {
+            $rts = explode('/', $route['path']);
+            $realrts = explode('/', $path);
+            if (count($rts) !== count($realrts)) {
+              $this->ctx->status(404);
+              echo 'Not Found';
+              return;
+            }
+            $check = false;
+            foreach ($rts as $k=>$v) {
+              if (strpos($v, ":") === false) {
+                if ($v === $realrts[$k]) {
+                  $check = true;
+                }
+              }
+            }
+            if ($check === false) {
+              $this->ctx->status(404);
+              echo 'Not Found';
+              return;
+            }
+            return $route['callable']($this->ctx);
+          }
+          $rts = explode(trim($route['path'], '/'), '/');
+          $realrts = explode(trim($path, '/'), '/');
+          if (count($rts) !== count($realrts)) {
+            $this->ctx->status(404);
+            echo 'Not Found';
+            return;
+          }
+          $check = false;
+          foreach($rts as $k=>$v) {
+            if (strpos($v, ':') === false) {
+              if ($v === $realrts[$k]) {
+                $check = true;
+              }
+            }
+          }
+          if ($check === false) {
+            $this->ctx->status(404);
+            echo 'Not Found';
+            return;
+          }
+          return $route['callable']($this->ctx);
+        }
+        if ($this->config->strictRouting) {
+          $rts = explode('/', $route['path']);
+          $realrts = explode('/', $path);
+          if (count($rts) !== count($realrts)) {
+            $this->ctx->status(404);
+            echo 'Not Found';
+            return;
+          }
+          $check = false;
+          foreach ($rts as $k=>$v) {
+            if (strpos($v, ":") === false) {
+              if (strtolower($v) === strtolower($realrts[$k])) {
+                $check = true;
+              }
+            }
+          }
+          if ($check === false) {
+            $this->ctx->status(404);
+            echo 'Not Found';
+            return;
+          }
+          return $route['callable']($this->ctx);
+        }
+        $rts = explode(trim($route['path'], '/'), '/');
+        $realrts = explode(trim($path, '/'), '/');
+        if (count($rts) !== count($realrts)) {
+          $this->ctx->status(404);
+          echo 'Not Found';
+          return;
+        }
+        $check = false;
+        foreach($rts as $k=>$v) {
+          if (strpos($v, ':') === false) {
+            if (strtolower($v) === strtolower($realrts[$k])) {
+              $check = true;
+            }
+          }
+        }
+        if ($check === false) {
+          $this->ctx->status(404);
+          echo 'Not Found';
+          return;
+        }
         return $route['callable']($this->ctx);
       } else {
         if ($this->config->caseSensitive) {
