@@ -45,12 +45,12 @@ class Request {
       if (!empty($params)) {
         if (array_key_exists($params[0], $queries)) {
           if (is_array($queries[$params[0]])) {
-            $queries[$params[0]] = [...$queries[$params[0]], $params[1]];
+            $queries[$params[0]] = [...$queries[$params[0]], htmlspecialchars($params[1], ENT_QUOTES, 'UTF-8')];
           } else {
-            $queries[$params[0]] = [$queries[$params[0]], $params[1]];
+            $queries[$params[0]] = [$queries[$params[0]], htmlspecialchars($params[1], ENT_QUOTES, 'UTF-8')];
           }
         } else {
-          $queries[$params[0]] = $params[1];
+          $queries[$params[0]] = htmlspecialchars($params[1], ENT_QUOTES, 'UTF-8');
         }
       }
     }
