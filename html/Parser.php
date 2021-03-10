@@ -12,7 +12,7 @@ class Parser {
 	protected const ATTR_DEL = ',';
 	protected const SEPARATOR = ':';
 	//<<
-	//Ba'zi bir o'zgaruvhchilar>>
+	//Ba'zi bir o'zgaruvchilar>>
 	protected $parent;
 	protected $text;
 	protected $attrs;
