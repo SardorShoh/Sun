@@ -76,4 +76,15 @@ class Connection {
       echo $e->getMessage();
     }
   }
+
+  public static function getInstance() {
+    if (!(self::$instance instanceof self)) {
+      self::$instance = new self();
+    }
+    return self::$instance;
+  }
+
+  public function getConnection () {
+    return $this->conn;
+  }
 }

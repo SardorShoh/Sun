@@ -6,12 +6,10 @@ use \lib\{ Request, Response, Headers, Cookie };
 class Context {
 
   protected Request $request;
-  protected Response $response;
   public array $route;
 
   public function __construct () {
     $this->request = new Request;
-    $this->response = new Response;
   }
 
   public function method () : ?string {
@@ -56,16 +54,20 @@ class Context {
     Cookie::setCookie(...$args);
   }
 
-  public function json ($data) : void {
-    $this->response->json($data);
+  public function json ($data): int {
+    return Response::json($data);
   }
 
-  public function send ($data) : void {
-    $this->response->sendString($data);
+  public function send ($data): int {
+    return Response::sendString($data);
   }
 
-  public function html ($data) : void {
-    $this->response->html($data);
+  public function html ($data): int {
+    return Response::html($data);
+  }
+
+  public function xml ($data): int {
+    return Response::xml($data);
   }
 
   public function getHeader (string $key) : ?string {
@@ -84,7 +86,13 @@ class Context {
     return $_SERVER['HTTP_HOST'];
   }
 
-  public function status (int $code) : void {
+  public function status (int $code) : Context {
     http_response_code($code);
+    return $this;
+  }
+
+  public function sendStatus (int $code) : int {
+    http_response_code($code);
+    return 0;
   }
 }

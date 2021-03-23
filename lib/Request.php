@@ -4,6 +4,7 @@ namespace lib;
 
 class Request {
   
+  // Foydalanuvchi so'rov yuborgan manzilning faqat direktoriya ko'rinishidagi qismini olish
   public function path () : string {
     $path = $_SERVER['REQUEST_URI'] ?? '/';
     $position = strpos($path, '?');
@@ -12,6 +13,7 @@ class Request {
     return substr($path, 0, $position);
   }
 
+  // Foydalanuvchi yuborgan so'rovning metodi. Masalan: GET, POST, PUT ...
   public function method () : ?string {
     return strtolower($_SERVER['REQUEST_METHOD']);
   }
