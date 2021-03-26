@@ -28,7 +28,7 @@ class Response {
 
   //send XML data to the client
   public static function xml($data) : int {
-    Headers::set('Content-Type', 'text/xml');
+    Headers::set('Content-Type', 'application/xml');
     echo $data;
     return 0;
   }

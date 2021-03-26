@@ -105,10 +105,8 @@ class Router {
 		return $this->routes;
 	}
 
+
 	
-
-
-
 	protected function staticAndDynamic(string $path): array{
 		$params = array_filter(explode('/', $path));
 		$static = [];

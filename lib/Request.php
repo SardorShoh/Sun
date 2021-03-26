@@ -5,7 +5,7 @@ namespace lib;
 class Request {
   
   // Foydalanuvchi so'rov yuborgan manzilning faqat direktoriya ko'rinishidagi qismini olish
-  public function path () : string {
+  public static function path () : string {
     $path = $_SERVER['REQUEST_URI'] ?? '/';
     $position = strpos($path, '?');
     if ($position === false) 
@@ -14,18 +14,18 @@ class Request {
   }
 
   // Foydalanuvchi yuborgan so'rovning metodi. Masalan: GET, POST, PUT ...
-  public function method () : ?string {
+  public static function method () : ?string {
     return strtolower($_SERVER['REQUEST_METHOD']);
   }
 
-  public function params (array $route, string $key) : ?string {
+  public static function params (array $route, string $key) : ?string {
     if (!empty($route)) {
       $r = explode('/', trim($route['path'], '/'));
       foreach ($r as $i => $param) {
         if (strpos($param, ':') !== false) {
           $name = ltrim($param, ':');
           if ($name === $key) {
-            $path = $this->path();
+            $path = self::path();
             $path = explode('/', trim($path, '/'));
             return $path[$i];
           }
@@ -35,10 +35,10 @@ class Request {
     return null;
   }
 
-  public function queries() : ?array {
+  public static function query(string $key = null) : array|string {
     $query = $_SERVER['QUERY_STRING'];
     if (!$query) {
-      return null;
+      return [];
     }
     $query = explode('&', $query);
     $queries = [];
@@ -56,38 +56,42 @@ class Request {
         }
       }
     }
-    return $queries;
+    if (!is_null($queries)) {
+      if (!is_null($key)) {
+        return $queries[$key];
+      }
+      return $queries;
+    }
+    return [];
   }
 
-  public function query(string $key) {
-    if (!is_null($this->queries()))
-      return $this->queries()[$key];
-    return null;
-  }
-
-  public function ip() : ?string {
+  public static function ip() : ?string {
     return $_SERVER['REMOTE_ADDR'];
   }
 
-  public function body() : ?string {
-    if ($this->is('multipart/form-data')) {
-      if (!empty($_POST)) {
-        return $_POST;
+  public static function body() : ?array {
+    if (self::is('multipart/form-data') || self::is('application/x-www-form-urlencoded')) {
+      switch (self::method()) {
+        case 'get':
+          return $_GET;
+        case 'post':
+          return $_POST;
+        default:
+          return $_REQUEST;
       }
-      return null;
     }
-    $body = file_get_contents('php://input');
-    if (!empty($body))
-      return $body;
+    if (self::is('application/json')) {
+      $body = file_get_contents('php://input');
+      return json_decode($body, true);
+    }
     return null;
   }
 
-  public function is(string $type) : bool {
+  public static function is(string $type) : bool {
     $content = Headers::getRequestHeaders()['Content-Type'];
-    if (is_null($this->body()))
+    if (strpos(strtolower($content), (ltrim(strtolower($type), '.'))) === false) {
       return false;
-    if (strpos(strtolower($content), (ltrim(strtolower($type), '.'))) === false)
-      return false;
+    }
     return true;
   }
   

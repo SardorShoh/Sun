@@ -30,6 +30,14 @@ class Headers {
     header("{$key}: {$value}", true);
   }
 
+  public static function setArray(array $headers) : void {
+    if (empty($headers) || is_null($headers)) return;
+    foreach ($headers as $key => $val) {
+      header("{$key}: {$val}", true);
+    }
+    return;
+  }
+
   public static function get(string $key): ?string {
     if (!array_key_exists($key, self::getRequestHeaders()))
       return null;
