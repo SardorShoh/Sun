@@ -9,18 +9,18 @@ class Cors {
   public string  $allowMethods    = 'GET,POST,PUT,HEAD,DELETE,PATCH';
   public string  $allowHeaders    = '';
   public bool    $allowCredential = false;
+  public bool    $enabled         = true;
 
-  public static function open() {
-    $self = new static;
+  public function __construct() {
     $arr = [
-      'Access-Control-Allow-Origin'  => $self->allowOrigin,
-      'Access-Control-Allow-Headers' => $self->allowHeaders,
-      'Access-Control-Allow-Methods' => $self->allowMethods
+      'Access-Control-Allow-Origin'  => $this->allowOrigin,
+      'Access-Control-Allow-Headers' => $this->allowHeaders,
+      'Access-Control-Allow-Methods' => $this->allowMethods
     ];
-    if ($self->allowCredential) {
+    if ($this->allowCredential) {
       $arr['Access-Control-Allow-Credentials'] = true;
     }
-    return Headers::setArray($arr);
+    Headers::setArray($arr);
   }
 
 }

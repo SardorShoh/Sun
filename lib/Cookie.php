@@ -10,7 +10,7 @@ class Cookie {
     return null;
   }
 
-  public static function getCookie(string $key) : ?string {
+  public static function getCookie(string $key = null) : ?string {
     if (!is_null(self::getCookies())) {
       if (array_key_exists($key, self::getCookies())) {
         return self::getCookies()[$key];
@@ -21,6 +21,7 @@ class Cookie {
 
   public static function setCookie (...$args) : void {
     setcookie(...$args);
+    return;
   }
 
 }
