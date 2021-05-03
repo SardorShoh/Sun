@@ -4,7 +4,7 @@ namespace lib;
 
 class Headers {
   
-  public static function getResponseHeaders() : ?array {
+  public static function get_response_headers() : ?array {
     $list = headers_list();
     $headers = [];
     if (!empty($list)) {
@@ -18,7 +18,7 @@ class Headers {
     return null;
   }
 
-  public static function getRequestHeaders(): ?array {
+  public static function get_request_headers(): ?array {
     return getallheaders();
   }
 
@@ -30,7 +30,7 @@ class Headers {
     header("{$key}: {$value}", true);
   }
 
-  public static function setArray(array $headers) : void {
+  public static function set_array(array $headers) : void {
     if (empty($headers) || is_null($headers)) return;
     foreach ($headers as $key => $val) {
       header("{$key}: {$val}", true);

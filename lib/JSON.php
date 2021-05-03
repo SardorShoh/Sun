@@ -3,27 +3,22 @@
 namespace lib;
 
 use lib\Arr;
-use Exception;
 
 class JSON {
 
-	//json string
-	protected $json;
-	protected $type;
-
-	public function __construct($json){
-		$this->type = gettype($json);
-		$this->json = $json;
+	// Array yoki Object ko'rinishidagi ma'lumotlarni JSONga aylantirish
+	public static function encode(mixed $data): string {
+		return json_encode($data);
 	}
 
-	public function encode(): string {
-		return json_encode($this->json);
+	// JSON ko'rinishidagi ma'lumotlarni Arr obyektiga olish
+	public static function decode(string $data): Arr {
+		return new Arr(json_decode($data, true));
 	}
 
-	public function decode(): Arr {
-		if ($this->type == "string")
-			return new Arr(json_decode($this->json, true));
-		throw new Exception("this is not a json format");
+	// Fayldan JSON ma'lumotlarni olish va uni Arr obyektiga o'tkazish
+	public static function from_file(string $path): Arr {
+
 	}
 
 }

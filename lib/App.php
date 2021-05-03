@@ -6,15 +6,20 @@ use \lib\{Router, Request, Response, Config, Context};
 class App {
   
   protected Router $router;
-  protected Request $request;
-  protected Response $response;
   protected Config $config;
   protected Context $ctx;
+  protected Cors $cors;
 
-  public function __construct(Config $config) {
+  public function __construct(Config $config, Cors $cors) {
+    $this->cors   = $cors;
     $this->config = $config;
     $this->router = new Router;
-    $this->ctx = new Context();
+    $this->ctx    = new Context;
+
+    Headers::remove('X-Powered-By');
+    if ($this->config->server_header !== '') {
+      Headers::set('Server', $this->config->serverHeader);
+    }
   }
 
   public function get(string $path, callable $callback) {
@@ -41,21 +46,61 @@ class App {
     $this->router->options($path, $callback);
   }
 
+  public function head(string $path, callable $callback) {
+    $this->router->head($path, $callback);
+  }
+
+  public function copy(string $path, callable $callback) {
+    $this->router->copy($path, $callback);
+  }
+
+  public function link(string $path, callable $callback) {
+    $this->router->link($path, $callback);
+  }
+
   public function run () {
-    Headers::remove('X-Powered-By');
-    if (!empty($this->config->serverHeader)) {
-      Headers::set('Server', $this->config->serverHeader);
+    $path   = Request::path();
+    $method = Request::method();
+    $routes = $this->router->get_routes();
+
+    if ($this->config->get_only && $method !== 'get') {
+      return $this->ctx->status(404)->send('Not Found');
     }
-    $path = $this->ctx->path();
-    $method = $this->ctx->method();
-    if ($this->config->getOnly === true) {
-      if ($method !== 'get') {
-        $this->ctx->status(404);
-        echo 'Not Found. Non GET method';
-        return;
+
+    foreach ($routes[$method] as $route) {
+      if ($route['is_nested']) {
+        $this->ctx->route = $route;
+        if ($this->config->case_sensitive) {
+          if ($this->config->strict_routing) {
+
+          } else {
+
+          }
+        } else {
+
+        }
+      } else {
+        if ($this->config->case_sensitive) {
+          if ($this->config->strict_routing) {
+            if ($path !== $route['path']) continue;
+          } else {
+            if (trim($path, '/') !== trim($route['path'], '/')) continue;
+          }
+        } else {
+          if ($this->config->strict_routing) {
+            if (strtolower($path) !== strtolower($route['path'])) continue;
+          } else {
+            if (strtolower(trim($path, '/')) !== strtolower(trim($route['path'], '/'))) continue;
+          }
+        }
       }
+      return $route['callable']($this->ctx);
     }
-    $routes = $this->router->getRoutes()[$method];
+    return $this->ctx->status(404)->send('Not Found');
+
+
+
+    
     foreach ($routes as $route) {
       if ($route['is_nested']) {
         $this->ctx->route = $route;

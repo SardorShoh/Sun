@@ -4,22 +4,22 @@ namespace lib;
 
 class Cookie {
 
-  public static function getCookies() : ?array {
+  public static function get_cookies() : ?array {
     if (!empty($_COOKIE))
       return $_COOKIE;
     return null;
   }
 
-  public static function getCookie(string $key = null) : ?string {
-    if (!is_null(self::getCookies())) {
-      if (array_key_exists($key, self::getCookies())) {
-        return self::getCookies()[$key];
+  public static function get_cookie(string $key = null) : ?string {
+    if (!is_null(self::get_cookies())) {
+      if (array_key_exists($key, self::get_cookies())) {
+        return self::get_cookies()[$key];
       }
     }
     return null;
   }
 
-  public static function setCookie (...$args) : void {
+  public static function set_cookie (...$args) : void {
     setcookie(...$args);
     return;
   }

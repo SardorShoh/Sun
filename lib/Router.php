@@ -7,10 +7,8 @@ use \lib\Request;
  */
 class Router {
 
-	protected $path;
-	protected $method;
-	protected $routes = [];
-	protected $allowed = [
+	private $routes = [];
+	private $allowed = [
 		'GET',
 		'POST',
 		'PUT',
@@ -23,74 +21,72 @@ class Router {
 		'GROUP',
 	];
 	private static $instance;
-	private Request $request;
 
+
+	// Singleton Router obyektini yaratish
 	public static function create() {
 		if (!self::$instance instanceof self) {
-			self::$instance = new self();
+			self::$instance = new self;
 		}
 		return self::$instance;
 	}
 
-	public function __construct() {
-		$this->request = new Request;
-		$this->path = rtrim($_SERVER['REQUEST_URI'], '/') === '' ? '/' : rtrim($_SERVER['REQUEST_URI'], '/');
-		$this->method = $_SERVER['REQUEST_METHOD'];
+	// Dinamik router parameterlari borligini aniqlash
+	private function is_nested(string $path): bool {
+		return strpos($path, ':') === false ? false : true;
 	}
 
-	protected function isNested(string $path): bool {
-		if (strpos($path, ':') === false) {
-			return false;
-		}
-		return true;
+	// So'rovlarni bazaviy ro'yxatga olish
+	private function base_register(string $method, string $path, callable $callback) {
+		$arr = ['path' => $path, 'callable' => $callback];
+		$this->is_nested($path) ? $arr['is_nested'] = true : $arr['is_nested'] = false;
+		$this->routes[$method][] = $arr;
+		return;
 	}
 
+	// GET so'rovlarini ro'yxatga olish
 	public function get(string $path, callable $callback) {
-		if ($this->isNested($path)) {
-			$this->routes['get'][] = ['is_nested' => true, 'path' => $path, 'callable' => $callback];
-		} else {
-			$this->routes['get'][] = ['is_nested' => false, 'path' => $path, 'callable' => $callback];
-		}
+		return $this->base_register('get', $path, $callback);
 	}
 
+	// POST so'rovlarini ro'yxatga olish
 	public function post(string $path, callable $callback) {
-		if ($this->isNested($path)) {
-			$this->routes['post'][] = ['is_nested' => true, 'path' => $path, 'callable' => $callback];
-		} else {
-			$this->routes['post'][] = ['is_nested' => false, 'path' => $path, 'callable' => $callback];
-		}
+		return $this->base_register('post', $path, $callback);
 	}
 
+	// PUT so'rovlarini ro'yxatga olish
 	public function put(string $path, callable $callback) {
-		if ($this->isNested($path)) {
-			$this->routes['put'][] = ['is_nested' => true, 'path' => $path, 'callable' => $callback];
-		} else {
-			$this->routes['put'][] = ['is_nested' => false, 'path' => $path, 'callable' => $callback];
-		}
+		return $this->base_register('put', $path, $callback);
 	}
 
+	// DELETE so'rovlarini ro'yxatga olish
 	public function delete(string $path, callable $callback) {
-		if ($this->isNested($path)) {
-			$this->routes['delete'][] = ['is_nested' => true, 'path' => $path, 'callable' => $callback];
-		} else {
-			$this->routes['delete'][] = ['is_nested' => false, 'path' => $path, 'callable' => $callback];
-		}
+		return $this->base_register('delete', $path, $callback);
 	}
 
+	// PATCH so'rovlarini ro'yxatga olish
 	public function patch(string $path, callable $callback) {
-		if ($this->isNested($path)) {
-			$this->routes['patch'][] = ['is_nested' => true, 'path' => $path, 'callable' => $callback];
-		} else {
-			$this->routes['patch'][] = ['is_nested' => false, 'path' => $path, 'callable' => $callback];
-		}
+		return $this->base_register('patch', $path, $callback);
 	}
 
+	// OPTIONS so'rovlarini ro'yxatga olish
 	public function options(string $path, callable $callback) {
-		if ($this->isNested($path)) {
-			$this->routes['options'][] = ['is_nested' => true, 'path' => $path, 'callable' => $callback];
-		} else {
-			$this->routes['options'][] = ['is_nested' => false, 'path' => $path, 'callable' => $callback];
-		}
+		return $this->base_register('options', $path, $callback);
+	}
+
+	// HEAD so'rovlarini ro'yxatga olish
+	public function head(string $path, callable $callback) {
+		return $this->base_register('head', $path, $callback);
+	}
+
+	// COPY so'rovlarini ro'yxatga olish
+	public function copy(string $path, callable $callback) {
+		return $this->base_register('copy', $path, $callback);
+	}
+
+	// LINK so'rovlarini ro'yxatga olish
+	public function link(string $path, callable $callback) {
+		return $this->base_register('link', $path, $callback);
 	}
 
 	public function group(string $path) {
@@ -101,129 +97,9 @@ class Router {
 		}
 	}
 
-	public function getRoutes() : ?array {
+	// Barcha routelar ro'yxatini olish
+	public function get_routes() : ?array {
 		return $this->routes;
 	}
 
-
-	
-	protected function staticAndDynamic(string $path): array{
-		$params = array_filter(explode('/', $path));
-		$static = [];
-		$dynamic = [];
-		foreach ($params as $i => $param) {
-			if ($this->isNested($param)) {
-				$dynamic[$i] = $param;
-			} else {
-				$static[$i] = $param;
-			}
-		}
-		return [
-			'static' => $static,
-			'dynamic' => $dynamic,
-		];
-	}
-
-	protected function realPathToArray():  ?array {
-		$path = array_filter(explode('/', $this->path));
-		if (empty($path)) {
-			return null;
-		}
-		return $path;
-	}
-
-	protected function getArgs(string $path) :  ?array {
-		$params = $this->realPathToArray();
-		$pathcount = count(array_filter(explode('/', $path)));
-		if (count($params) !== $pathcount) {
-			return null;
-		}
-		$keys = array_keys($this->staticAndDynamic($path)['dynamic']);
-		$args = [];
-		foreach ($keys as $key) {
-			$args[] = $params[$key];
-		}
-		return array_filter($args);
-	}
-
-	protected function isEqual(string $path) : bool {
-		if (!$this->realPathToArray() && $path === '/') {
-			return true;
-		}
-		$params = $this->realPathToArray();
-		$pathcount = count(array_filter(explode('/', $path)));
-		if (count($params) !== $pathcount) {
-			return false;
-		}
-		$static = $this->staticAndDynamic($path)['static'];
-		$keys = array_keys($static);
-		$real = $this->realPathToArray();
-		$realstatic = [];
-		foreach ($keys as $key) {
-			$realstatic[] = $real[$key];
-		}
-		$real = join('/', $realstatic);
-		$static = join('/', $static);
-		return $real == $static;
-	}
-
-	public function __call($method, $args) {
-		$path = '/' . trim($args[0], '/') === '' ? '/' : '/' . trim($args[0], '/');
-		$func = $args[1];
-		$method = strtoupper($method);
-		if (in_array($method, $this->allowed)) {
-			if ($method === 'GROUP') {
-				$this->routes[] = [
-					'path' => $path,
-					'isnested' => $this->isNested($path),
-					'isequal' => $this->isEqual($path),
-					'args' => $this->method,
-					'func' => $func,
-				];
-				return;
-			} else if ($method === $this->method) {
-				$this->routes[] = [
-					'path' => $path,
-					'isnested' => $this->isNested($path),
-					'isequal' => $this->isEqual($path),
-					'args' => $this->getArgs($path),
-					'func' => $func,
-				];
-				return;
-			}
-			return;
-		}
-		return;
-	}
-
-	public function run() {
-		//print_r($this->routes);
-		if (!empty($this->routes)) {
-			foreach ($this->routes as $route) {
-				if ($route['isequal']) {
-					if ($route['isnested']) {
-						return $route['func'](...$route['args']);
-					}
-					return $route['func']();
-				}
-			}
-		}
-		//Header::setcode(404);
-		echo 'Bunday sahifa mavjud emas';
-		return;
-	}
-
-	public function resolve () {
-		$path = $this->request->path();
-		$method = $this->request->method();
-		if (in_array($method, $this->allowed)) {
-			$callback = $this->routes[$method][$path] ?? false;
-			if (!$callback) {
-				echo 'Not Found';
-				return;
-			}
-		}
-	}
-
 }
-?>

@@ -5,11 +5,12 @@ namespace lib;
 class Request {
   
   // Foydalanuvchi so'rov yuborgan manzilning faqat direktoriya ko'rinishidagi qismini olish
-  public static function path () : string {
-    $path = $_SERVER['REQUEST_URI'] ?? '/';
+  public static function path () : ?string {
+    $path = $_SERVER['REQUEST_URI'];
     $position = strpos($path, '?');
-    if ($position === false) 
+    if ($position === false) {
       return $path;
+    }
     return substr($path, 0, $position);
   }
 
@@ -18,15 +19,16 @@ class Request {
     return strtolower($_SERVER['REQUEST_METHOD']);
   }
 
+  // 
   public static function params (array $route, string $key) : ?string {
     if (!empty($route)) {
-      $r = explode('/', trim($route['path'], '/'));
+      $r = explode('/', $route['path']);
       foreach ($r as $i => $param) {
         if (strpos($param, ':') !== false) {
           $name = ltrim($param, ':');
           if ($name === $key) {
             $path = self::path();
-            $path = explode('/', trim($path, '/'));
+            $path = explode('/', $path);
             return $path[$i];
           }
         }
@@ -35,6 +37,7 @@ class Request {
     return null;
   }
 
+  // 
   public static function query(string $key = null) : array|string {
     $query = $_SERVER['QUERY_STRING'];
     if (!$query) {
@@ -65,10 +68,12 @@ class Request {
     return [];
   }
 
+  // 
   public static function ip() : ?string {
     return $_SERVER['REMOTE_ADDR'];
   }
 
+  // 
   public static function body() : ?array {
     if (self::is('multipart/form-data') || self::is('application/x-www-form-urlencoded')) {
       switch (self::method()) {
@@ -87,12 +92,18 @@ class Request {
     return null;
   }
 
+  // 
   public static function is(string $type) : bool {
     $content = Headers::getRequestHeaders()['Content-Type'];
     if (strpos(strtolower($content), (ltrim(strtolower($type), '.'))) === false) {
       return false;
     }
     return true;
+  }
+
+  // Haqiqiy so'rov kelgan manzilni arrayga o'tkazish
+  public static function path_to_array(): ?array {
+    return explode('/', self::path());
   }
   
 }

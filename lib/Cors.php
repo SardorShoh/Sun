@@ -5,22 +5,24 @@ use lib\Headers;
 
 class Cors {
 
-  public string  $allowOrigin     = '*';
-  public string  $allowMethods    = 'GET,POST,PUT,HEAD,DELETE,PATCH';
-  public string  $allowHeaders    = '';
-  public bool    $allowCredential = false;
-  public bool    $enabled         = true;
+  public string  $allow_origin     = '*';
+  public string  $allow_methods    = 'GET,POST,PUT,HEAD,DELETE,PATCH';
+  public string  $allow_headers    = '';
+  public bool    $allow_credential = false;
+  public bool    $enabled          = true;
 
-  public function __construct() {
+  public function open() {
     $arr = [
-      'Access-Control-Allow-Origin'  => $this->allowOrigin,
-      'Access-Control-Allow-Headers' => $this->allowHeaders,
-      'Access-Control-Allow-Methods' => $this->allowMethods
+      'Access-Control-Allow-Origin'  => $this->allow_origin,
+      'Access-Control-Allow-Headers' => $this->allow_headers,
+      'Access-Control-Allow-Methods' => $this->allow_methods
     ];
-    if ($this->allowCredential) {
+    if ($this->allow_credential) {
       $arr['Access-Control-Allow-Credentials'] = true;
     }
-    Headers::setArray($arr);
+    if ($this->enabled) {
+      Headers::set_array($arr);
+    }
   }
 
 }

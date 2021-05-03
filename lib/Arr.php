@@ -73,33 +73,42 @@ class Arr {
 
 	//get keys of array
 	public function keys($search = null) {
-		if ($search != null) {
-			$this -> arr = array_keys($this->arr, $search, true);
+		if (!is_null($search)) {
+			$this->arr = array_keys($this->arr, $search, true);
 		}
-		$this -> arr = array_keys($this->arr);
+		$this->arr = array_keys($this->arr);
 	}
 
 	//get values of array
 	public function values() {
-		$this -> arr = array_values($this->arr);
+		$this->arr = array_values($this->arr);
 	}
 
 	//map method for array
 	public function map(callable $call): self {
-		$this -> arr = array_map($call, $this->arr);
+		$this->arr = array_map($call, $this->arr);
 	}
 
 	//filter method for array
 	public function filter(callable $func) {
 		if ($func) {
-			$this -> arr = array_filter($this->arr, $func);
+			$this->arr = array_filter($this->arr, $func);
 		}
-		$this -> arr = array_filter($this->arr);
+		$this->arr = array_filter($this->arr);
 	}
 
-	//inArray method for array
-	public function inArray($needle): bool {
+	//in_array method for array
+	public function in_array($needle): bool {
 		return in_array($needle, $this->arr);
+	}
+
+	// find method find from array and return single array
+	public function find($key, $value): ?array {
+
+	}
+
+	public function find_index(): ?int {
+
 	}
 
 	//this method for getting ready array
@@ -108,17 +117,17 @@ class Arr {
 	}
 
 	//this method for array to JSON converting
-	public function toJSON(): string {
+	public function to_json(): string {
 		return (new JSON($this->arr))->encode();
 	}
 
 	//this method for array to object converting
-	public function toObject(): object {
+	public function to_object(): object {
 		return (object) $this->arr;
 	}
 
 	// this method for array to string converting
-	public function __toString(): string {
+	public function to_string(): string {
 		$out = '';
 		foreach ($this->arr as $val) {
 			$out .= $val . ',';
@@ -127,13 +136,13 @@ class Arr {
 	}
 
 	//this method is remove array elements by keys
-	public function removeByKey($key) {
+	public function remove_by_key($key) {
 		unset($this->arr[$key]);
 		$this->length = count($this->arr);
 	}
 
 	//this method is remove array elements by values
-	public function removeByValue($val = '') {
+	public function remove_by_value($val = '') {
 		foreach ($this->arr as $i => $v) {
 			if ($val === $v) {
 				unset($this->arr[$i]);

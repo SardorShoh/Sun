@@ -5,8 +5,8 @@ use lib\Arr;
 
 class CSV {
 
-  public static function parseCSV(string $file, string $delimiter = ";", string $newline = "\n"): Arr {
-    $file = file_get_contents(realpath($file));
+  public static function parse_from_file(string $path, string $delimiter = ";", string $newline = "\n"): Arr {
+    $file = file_get_contents(realpath($path));
     $arr = new Arr();
     $rows = explode($newline, $file);
     if (count($rows) > 0) {

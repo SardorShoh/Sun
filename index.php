@@ -21,7 +21,7 @@ $app->get('/login/:hdhdh/', function ($ctx) {
 });
 
 $app->post('/login', function ($ctx) {
-  $ctx->json(['hello' => 'world']);
+  $ctx->status(404)->json(['hello' => 'world']);
 });
 
 $app->run();
