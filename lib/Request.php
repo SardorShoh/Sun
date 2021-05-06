@@ -5,7 +5,7 @@ namespace lib;
 class Request {
   
   // Foydalanuvchi so'rov yuborgan manzilning faqat direktoriya ko'rinishidagi qismini olish
-  public static function path () : ?string {
+  public static function path() : ?string {
     $path = $_SERVER['REQUEST_URI'];
     $position = strpos($path, '?');
     if ($position === false) {
@@ -15,29 +15,28 @@ class Request {
   }
 
   // Foydalanuvchi yuborgan so'rovning metodi. Masalan: GET, POST, PUT ...
-  public static function method () : ?string {
+  public static function method() : ?string {
     return strtolower($_SERVER['REQUEST_METHOD']);
   }
 
-  // 
-  public static function params (array $route, string $key) : ?string {
+  // Routerdagi o'zgaruvchan parameterlarini olish
+  public static function params(array $route) : ?array {
+    $arr = [];
     if (!empty($route)) {
-      $r = explode('/', $route['path']);
-      foreach ($r as $i => $param) {
+      // $r = preg_split("/[-.\/]+/", $route['path'], PREG_SPLIT_OFFSET_CAPTURE);
+      foreach ($route as $i => $param) {
         if (strpos($param, ':') !== false) {
           $name = ltrim($param, ':');
-          if ($name === $key) {
-            $path = self::path();
-            $path = explode('/', $path);
-            return $path[$i];
-          }
+          $path = self::path();
+          $path = explode('/', $path);
+          $arr = array_merge($arr, [$name => $path[$i]]);
         }
       }
     }
-    return null;
+    return $arr;
   }
 
-  // 
+  // So'rovni QUERYSTRING ma'lumotlarini olish
   public static function query(string $key = null) : array|string {
     $query = $_SERVER['QUERY_STRING'];
     if (!$query) {
@@ -68,12 +67,12 @@ class Request {
     return [];
   }
 
-  // 
+  // So'rov yuboruvchi foydalanuvchining real IP manzilini olib beradi
   public static function ip() : ?string {
     return $_SERVER['REMOTE_ADDR'];
   }
 
-  // 
+  // JSON, XML yoki shunga o'xshagan so'rovlarning ma'lumotlarini olib beradi
   public static function body() : ?array {
     if (self::is('multipart/form-data') || self::is('application/x-www-form-urlencoded')) {
       switch (self::method()) {
@@ -92,7 +91,7 @@ class Request {
     return null;
   }
 
-  // 
+  // So'rovlarning Content Type ni tekshirish
   public static function is(string $type) : bool {
     $content = Headers::getRequestHeaders()['Content-Type'];
     if (strpos(strtolower($content), (ltrim(strtolower($type), '.'))) === false) {

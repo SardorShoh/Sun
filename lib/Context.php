@@ -15,9 +15,15 @@ class Context {
     return Request::path();
   }
 
-  public function params (string $key) : ?string {
+  public function params () : ?array {
     if (!empty($this->route))
-      return Request::params($this->route, $key);
+      return Request::params($this->route);
+    return null;
+  }
+
+  public function param (string $key): ?string {
+    if (!is_null($this->params()))
+      return $this->params()[$key];
     return null;
   }
 
@@ -49,7 +55,7 @@ class Context {
     Cookie::set_cookie(...$args);
   }
 
-  public function json (string $data) {
+  public function json (array $data) {
     return Response::json($data);
   }
 

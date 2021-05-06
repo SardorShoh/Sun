@@ -6,7 +6,7 @@ use \lib\Headers;
 class Response {
 
   //data encode to JSON and send to client
-  public static function json(string $data) {
+  public static function json(array $data) {
     Headers::set('Content-Type', 'application/json;charset=utf-8');
     echo json_encode($data);
     return;

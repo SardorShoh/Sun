@@ -102,4 +102,14 @@ class Router {
 		return $this->routes;
 	}
 
+	// real route ni arrayga ajratish
+	public function real_to_array(): ?array {
+		return explode('/', Request::path());
+	}
+
+	// dinamik routelarni arrayga ajratish
+	public function dynamic_to_array(string $path): ?array {
+		return explode('/', $path);
+	}
+
 }

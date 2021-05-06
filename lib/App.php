@@ -10,18 +10,19 @@ class App {
   protected Context $ctx;
   protected Cors $cors;
 
-  public function __construct(Config $config, Cors $cors) {
-    $this->cors   = $cors;
+  public function __construct(Config $config, Cors $cors = null) {
+    if (!is_null($cors))  $this->cors   = $cors;
     $this->config = $config;
     $this->router = new Router;
     $this->ctx    = new Context;
 
     Headers::remove('X-Powered-By');
     if ($this->config->server_header !== '') {
-      Headers::set('Server', $this->config->serverHeader);
+      Headers::set('Server', $this->config->server_header);
     }
   }
 
+  // GET methodlik router linkni qo'shish
   public function get(string $path, callable $callback) {
     $this->router->get($path, $callback);
   }
@@ -66,19 +67,33 @@ class App {
     if ($this->config->get_only && $method !== 'get') {
       return $this->ctx->status(404)->send('Not Found');
     }
-
     foreach ($routes[$method] as $route) {
       if ($route['is_nested']) {
-        $this->ctx->route = $route;
-        if ($this->config->case_sensitive) {
-          if ($this->config->strict_routing) {
-
-          } else {
-
-          }
+        $this->ctx->route = explode('/', $route['path']);
+        $real = $dynamic = [];
+        if ($this->config->strict_routing) {
+          $real = $this->router->real_to_array();
+          $dynamic = $this->router->dynamic_to_array($route['path']);
         } else {
-
+          $real = array_filter($this->router->real_to_array());
+          $dynamic = array_filter($this->router->dynamic_to_array($route['path']));
         }
+        if (count($real) !== count($dynamic)) continue;
+        $check = false;
+        foreach ($dynamic as $key => $val) {
+          if (strpos($val, ':') === false) {
+            if ($this->config->case_sensitive) {
+              if (strtolower($real[$key]) === strtolower($val)) {
+                $check = true;
+              }
+            } else {
+              if ($real[$key] === $val) {
+                $check = true;
+              }
+            }
+          }
+        }
+        if (!$check) continue;
       } else {
         if ($this->config->case_sensitive) {
           if ($this->config->strict_routing) {
@@ -97,135 +112,5 @@ class App {
       return $route['callable']($this->ctx);
     }
     return $this->ctx->status(404)->send('Not Found');
-
-
-
-    
-    foreach ($routes as $route) {
-      if ($route['is_nested']) {
-        $this->ctx->route = $route;
-        if ($this->config->caseSensitive) {
-          if ($this->config->strictRouting) {
-            $rts = explode('/', $route['path']);
-            $realrts = explode('/', $path);
-            if (count($rts) !== count($realrts)) {
-              $this->ctx->status(404);
-              echo 'Not Found';
-              return;
-            }
-            $check = false;
-            foreach ($rts as $k=>$v) {
-              if (strpos($v, ":") === false) {
-                if ($v === $realrts[$k]) {
-                  $check = true;
-                }
-              }
-            }
-            if ($check === false) {
-              $this->ctx->status(404);
-              echo 'Not Found';
-              return;
-            }
-            return $route['callable']($this->ctx);
-          }
-          $rts = explode(trim($route['path'], '/'), '/');
-          $realrts = explode(trim($path, '/'), '/');
-          if (count($rts) !== count($realrts)) {
-            $this->ctx->status(404);
-            echo 'Not Found';
-            return;
-          }
-          $check = false;
-          foreach($rts as $k=>$v) {
-            if (strpos($v, ':') === false) {
-              if ($v === $realrts[$k]) {
-                $check = true;
-              }
-            }
-          }
-          if ($check === false) {
-            $this->ctx->status(404);
-            echo 'Not Found';
-            return;
-          }
-          return $route['callable']($this->ctx);
-        }
-        if ($this->config->strictRouting) {
-          $rts = explode('/', $route['path']);
-          $realrts = explode('/', $path);
-          if (count($rts) !== count($realrts)) {
-            $this->ctx->status(404);
-            echo 'Not Found';
-            return;
-          }
-          $check = false;
-          foreach ($rts as $k=>$v) {
-            if (strpos($v, ":") === false) {
-              if (strtolower($v) === strtolower($realrts[$k])) {
-                $check = true;
-              }
-            }
-          }
-          if ($check === false) {
-            $this->ctx->status(404);
-            echo 'Not Found';
-            return;
-          }
-          return $route['callable']($this->ctx);
-        }
-        $rts = explode(trim($route['path'], '/'), '/');
-        $realrts = explode(trim($path, '/'), '/');
-        if (count($rts) !== count($realrts)) {
-          $this->ctx->status(404);
-          echo 'Not Found';
-          return;
-        }
-        $check = false;
-        foreach($rts as $k=>$v) {
-          if (strpos($v, ':') === false) {
-            if (strtolower($v) === strtolower($realrts[$k])) {
-              $check = true;
-            }
-          }
-        }
-        if ($check === false) {
-          $this->ctx->status(404);
-          echo 'Not Found';
-          return;
-        }
-        return $route['callable']($this->ctx);
-      } else {
-        if ($this->config->caseSensitive) {
-          if ($this->config->strictRouting) {
-            if ($path === $route['path']) {
-              return $route['callable']($this->ctx);
-            }
-            $this->ctx->status(404);
-            echo 'Not Found';
-            return;
-          }
-          if (trim($path, '/') === trim($route['path'], '/')) {
-            return $route['callable']($this->ctx);
-          }
-          $this->ctx->status(404);
-          echo 'Not Found';
-          return;
-        }
-        if ($this->config->strictRouting) {
-          if (strtolower($path) === strtolower($route['path'])) {
-            return $route['callable']($this->ctx);
-          }
-          $this->ctx->status(404);
-          echo 'Not Found';
-          return;
-        }
-        if (strtolower(trim($path, '/')) === strtolower(trim($route['path'], '/'))) {
-          return $route['callable']($this->ctx);
-        }
-        $this->ctx->status(404);
-        echo 'Not Found';
-        return;
-      }
-    }
   }
 }
