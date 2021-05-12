@@ -27,38 +27,47 @@ class App {
     $this->router->get($path, $callback);
   }
 
+  // POST methodlik router linkni qo'shish
   public function post(string $path, callable $callback) {
     $this->router->post($path, $callback);
   }
 
+  // PUT methodlik router linkni qo'shish
   public function put(string $path, callable $callback) {
     $this->router->put($path, $callback);
   }
 
+  // DELETE methodlik router linkni qo'shish
   public function delete(string $path, callable $callback) {
     $this->router->delete($path, $callback);
   }
 
+  // PATCH methodlik router linkni qo'shish
   public function patch(string $path, callable $callback) {
     $this->router->patch($path, $callback);
   }
 
+  // OPTIONS methodlik router linkni qo'shish
   public function options(string $path, callable $callback) {
     $this->router->options($path, $callback);
   }
 
+  // HEAD methodlik router linkni qo'shish
   public function head(string $path, callable $callback) {
     $this->router->head($path, $callback);
   }
 
+  // COPY methodlik router linkni qo'shish
   public function copy(string $path, callable $callback) {
     $this->router->copy($path, $callback);
   }
 
+  // LINK methodlik router linkni qo'shish
   public function link(string $path, callable $callback) {
     $this->router->link($path, $callback);
   }
 
+  // Applicationni ishga tushirib yuboruvchi funksiya
   public function run () {
     $path   = Request::path();
     $method = Request::method();

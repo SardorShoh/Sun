@@ -15,11 +15,20 @@ class Connection {
   //Bazaga ulanish konfiguratsiyalari
   private Config $c;
 
-  //Ma'lumotlar bazasiga ulanish konstruktori
+  /*
+  * Ma'lumotlar bazasiga ulanish konstruktori
+  ^ mysql, maria -> MySQL va MariaDB ma'lumotlar bazalariga ulanish driverlarini yoqish
+  ^ pgsql, postgres, postgresql -> PostgrSQL ma'lumotlar bazasiga ulanish driverini yoqish
+  ^ sqlite -> SQLite ma'lumotlar bazasiga ulanish driverini yoqish
+  ^ firebird -> FirebirdSQL ma'lumotlar bazasiga ulanish driverini yoqish
+  ^ oci, oracle -> Oracle ma'lumotlar bazasiga ulanish driverini yoqish
+  ^ mssql, sqlserver, sqlsrv -> Microsoft SQLServer ma'lumotlar bazasiga ulanish driverini yoqish
+  */
   private function __construct() {
     try {
       switch (strtolower($this->driver)) {
         case 'mysql':
+        case 'maria':
           $dsn = "mysql:host={$this->c->host};dbname={$this->c->dbname}";
           if ($this->c->port) {
             $dsn = "mysql:host={$this->c->host};port={$this->c->port};dbname={$this->c->dbname}";
@@ -77,14 +86,15 @@ class Connection {
     }
   }
 
-  public static function getInstance() {
+  public static function create(Config $c) {
+    $this->c = $c;
     if (!(self::$instance instanceof self)) {
       self::$instance = new self();
     }
     return self::$instance;
   }
 
-  public function getConnection () {
+  public function connect () {
     return $this->conn;
   }
 }

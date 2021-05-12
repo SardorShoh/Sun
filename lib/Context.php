@@ -59,7 +59,7 @@ class Context {
     return Response::json($data);
   }
 
-  public function send (string $data) {
+  public function text (string $data) {
     return Response::send_string($data);
   }
 
