@@ -87,7 +87,7 @@ class Connection {
   }
 
   public static function create(Config $c) {
-    $this->c = $c;
+    self::$c = $c;
     if (!(self::$instance instanceof self)) {
       self::$instance = new self();
     }
