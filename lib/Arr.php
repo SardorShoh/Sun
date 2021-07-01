@@ -85,7 +85,7 @@ class Arr {
 	}
 
 	//map method for array
-	public function map(callable $call): self {
+	public function map(callable $call) {
 		$this->arr = array_map($call, $this->arr);
 	}
 
@@ -104,11 +104,11 @@ class Arr {
 
 	// find method find from array and return single array
 	public function find($key, $value): ?array {
-
+		return null;
 	}
 
 	public function find_index(): ?int {
-
+		return null;
 	}
 
 	//this method for getting ready array
@@ -118,7 +118,7 @@ class Arr {
 
 	//this method for array to JSON converting
 	public function to_json(): string {
-		return (new JSON($this->arr))->encode();
+		return JSON::encode($this->arr);
 	}
 
 	//this method for array to object converting

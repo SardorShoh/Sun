@@ -39,9 +39,9 @@ class Headers {
   }
 
   public static function get(string $key): ?string {
-    if (!array_key_exists($key, self::getRequestHeaders()))
+    if (!array_key_exists($key, self::get_request_headers()))
       return null;
-    return self::getRequestHeaders()[$key];
+    return self::get_request_headers()[$key];
   }
 
 }

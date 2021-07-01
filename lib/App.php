@@ -2,7 +2,7 @@
 declare(strict_types=1);
 namespace lib;
 
-use \lib\{Router, Request, Response, Config, Context};
+use \lib\{Router, Request, Config, Context};
 
 class App {
   
@@ -75,7 +75,7 @@ class App {
     $routes = $this->router->get_routes();
 
     if ($this->config->get_only && $method !== 'get') {
-      return $this->ctx->status(404)->send('Not Found');
+      return $this->ctx->status(404)->text('Not Found');
     }
     foreach ($routes[$method] as $route) {
       if ($route['is_nested']) {
@@ -121,6 +121,6 @@ class App {
       }
       return $route['callable']($this->ctx);
     }
-    return $this->ctx->status(404)->send('Not Found');
+    return $this->ctx->status(404)->text('Not Found');
   }
 }

@@ -18,7 +18,7 @@ class JSON {
 
 	// Fayldan JSON ma'lumotlarni olish va uni Arr obyektiga o'tkazish
 	public static function from_file(string $path): Arr {
-
+		return new Arr;
 	}
 
 }

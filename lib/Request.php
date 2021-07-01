@@ -93,7 +93,7 @@ class Request {
 
   // So'rovlarning Content Type ni tekshirish
   public static function is(string $type) : bool {
-    $content = Headers::getRequestHeaders()['Content-Type'];
+    $content = Headers::get_request_headers()['Content-Type'];
     if (strpos(strtolower($content), (ltrim(strtolower($type), '.'))) === false) {
       return false;
     }

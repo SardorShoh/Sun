@@ -91,7 +91,7 @@ class Router {
 	}
 
 	public function group(string $path) {
-		if ($this->isNested($path)) {
+		if ($this->is_nested($path)) {
 			$this->routes['group'][] = ['is_nested' => true, 'path' => $path];
 		} else {
 			$this->routes['group'][] = ['is_nested' => false, 'path' => $path];
