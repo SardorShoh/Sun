@@ -68,6 +68,16 @@ class App {
     $this->router->link($path, $callback);
   }
 
+  //any - har qanday so'rovlarga javob yuborish uchun
+  public function any() {
+
+  }
+
+  //use - qo'shimcha modullarni ulash uchun ishlatiluvchi funksiya
+  public function use() {
+    
+  }
+
   // Applicationni ishga tushirib yuboruvchi funksiya
   public function run () {
     $path   = Request::path();

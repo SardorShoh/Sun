@@ -27,6 +27,4 @@ class Config {
   public bool $disable_default_content_type = false; //odatiy Content-Type ni o'rnatish
   public bool $disable_header_normalizing = false; //header kalitlarini normal holatga keltirishni yoqish. Masalan: conTenT-TyPE => Content-Type
   public bool $disable_startup_message = false; //Startup messageni o'chirib qo'yish
-
-
 }
